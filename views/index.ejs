@@ -1,0 +1,42 @@
+<section class="hero">
+  <h1>Fund What Matters</h1>
+  <p>Back creative projects and bring them to life. From tech to art to music — it starts here.</p>
+  <div class="hero-cta">
+    <a href="/projects" class="btn btn-primary btn-lg">Discover Projects</a>
+    <a href="/projects/new" class="btn btn-outline btn-lg">Start a Project</a>
+  </div>
+</section>
+
+<% if (featuredProjects.length > 0) { %>
+<section class="section">
+  <h2 class="section-title">Featured Projects</h2>
+  <div class="projects-grid">
+    <% featuredProjects.forEach(project => { %>
+      <%- include('partials/projectCard', { project }) %>
+    <% }) %>
+  </div>
+</section>
+<% } %>
+
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">Newest Projects</h2>
+    <a href="/projects" class="see-all">See all →</a>
+  </div>
+  <div class="projects-grid">
+    <% newProjects.forEach(project => { %>
+      <%- include('partials/projectCard', { project }) %>
+    <% }) %>
+  </div>
+</section>
+
+<% if (endingSoonProjects.length > 0) { %>
+<section class="section section-alt">
+  <h2 class="section-title">Ending Soon</h2>
+  <div class="projects-grid">
+    <% endingSoonProjects.forEach(project => { %>
+      <%- include('partials/projectCard', { project }) %>
+    <% }) %>
+  </div>
+</section>
+<% } %>

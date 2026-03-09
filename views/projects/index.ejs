@@ -1,0 +1,41 @@
+<div class="page-header">
+  <h1>Discover Projects</h1>
+</div>
+
+<!-- Search & Filter -->
+<form class="filter-bar" method="GET" action="/projects">
+  <input type="text" name="search" placeholder="Search projects..." value="<%= searchQuery %>" class="search-input" />
+  <select name="category">
+    <option value="">All Categories</option>
+    <% categories.forEach(cat => { %>
+      <option value="<%= cat %>" <%= currentCategory === cat ? 'selected' : '' %>><%= cat %></option>
+    <% }) %>
+  </select>
+  <select name="sort">
+    <option value="newest" <%= currentSort === 'newest' ? 'selected' : '' %>>Newest</option>
+    <option value="popular" <%= currentSort === 'popular' ? 'selected' : '' %>>Most Popular</option>
+    <option value="ending" <%= currentSort === 'ending' ? 'selected' : '' %>>Ending Soon</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+<!-- Results -->
+<div class="projects-grid">
+  <% if (projects.length === 0) { %>
+    <p class="empty-state">No projects found. <a href="/projects/new">Start one!</a></p>
+  <% } else { %>
+    <% projects.forEach(project => { %>
+      <%- include('../partials/projectCard', { project }) %>
+    <% }) %>
+  <% } %>
+</div>
+
+<!-- Pagination -->
+<% if (totalPages > 1) { %>
+<div class="pagination">
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="/projects?page=<%= i %>&category=<%= currentCategory %>&sort=<%= currentSort %>&search=<%= searchQuery %>"
+       class="page-link <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+  <% } %>
+</div>
+<% } %>

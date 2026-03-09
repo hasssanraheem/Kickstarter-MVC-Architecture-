@@ -1,0 +1,18 @@
+<nav class="navbar">
+  <a href="/" class="navbar-brand">🚀 KickClone</a>
+  <ul class="navbar-links">
+    <li><a href="/projects">Discover</a></li>
+    <% if (currentUser) { %>
+      <li><a href="/projects/new">Start a Project</a></li>
+      <li><a href="/dashboard">Dashboard</a></li>
+      <li>
+        <form action="/auth/logout" method="POST" style="display:inline">
+          <button type="submit" class="btn-link">Log Out</button>
+        </form>
+      </li>
+    <% } else { %>
+      <li><a href="/auth/login">Log In</a></li>
+      <li><a href="/auth/register" class="btn btn-primary">Sign Up</a></li>
+    <% } %>
+  </ul>
+</nav>

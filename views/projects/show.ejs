@@ -1,0 +1,143 @@
+<div class="project-show">
+  <!-- Hero -->
+  <div class="project-hero">
+    <img src="<%= project.image %>" alt="<%= project.title %>" class="project-hero-img" />
+    <div class="project-hero-info">
+      <span class="badge"><%= project.category %></span>
+      <h1><%= project.title %></h1>
+      <p class="project-tagline"><%= project.shortDescription %></p>
+      <p>by <a href="/users/<%= project.creator._id %>"><%= project.creator.name %></a></p>
+
+      <!-- Progress -->
+      <div class="progress-bar large">
+        <div class="progress-fill" style="width: <%= project.percentFunded %>%"></div>
+      </div>
+      <div class="project-stats-row">
+        <div class="stat">
+          <strong>$<%= project.amountRaised.toLocaleString() %></strong>
+          <span>pledged of $<%= project.fundingGoal.toLocaleString() %> goal</span>
+        </div>
+        <div class="stat">
+          <strong><%= project.backerCount %></strong>
+          <span>backers</span>
+        </div>
+        <div class="stat">
+          <strong><%= project.daysRemaining %></strong>
+          <span>days to go</span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <% if (isOwner) { %>
+        <a href="/projects/<%= project.slug %>/edit" class="btn btn-outline">Edit Project</a>
+        <form action="/projects/<%= project.slug %>?_method=DELETE" method="POST" style="display:inline">
+          <button onclick="return confirm('Delete this project?')" class="btn btn-danger">Delete</button>
+        </form>
+      <% } else if (!hasBacked && project.status === 'active' && !project.isExpired) { %>
+        <a href="#pledge-section" class="btn btn-primary btn-lg">Back This Project</a>
+      <% } else if (hasBacked) { %>
+        <p class="backed-badge">✅ You backed this project!</p>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="project-body">
+    <!-- Description -->
+    <div class="project-description">
+      <h2>About this project</h2>
+      <div class="prose"><%- project.description %></div>
+
+      <!-- Video -->
+      <% if (project.videoUrl) { %>
+        <div class="video-wrap">
+          <iframe src="<%= project.videoUrl %>" frameborder="0" allowfullscreen></iframe>
+        </div>
+      <% } %>
+
+      <!-- Updates -->
+      <% if (project.updates.length > 0) { %>
+        <h3>Updates (<%= project.updates.length %>)</h3>
+        <% project.updates.slice().reverse().forEach(update => { %>
+          <div class="update-card">
+            <h4><%= update.title %></h4>
+            <p class="update-date"><%= update.postedAt.toDateString() %></p>
+            <p><%= update.body %></p>
+          </div>
+        <% }) %>
+      <% } %>
+
+      <!-- Post update (owner only) -->
+      <% if (isOwner) { %>
+        <div class="post-update-form">
+          <h3>Post an Update</h3>
+          <form action="/projects/<%= project.slug %>/updates" method="POST">
+            <input type="text" name="title" placeholder="Update title" required class="form-control" />
+            <textarea name="body" rows="4" placeholder="What's new?" required class="form-control"></textarea>
+            <button type="submit" class="btn btn-primary">Post Update</button>
+          </form>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="project-sidebar">
+      <!-- Reward Tiers -->
+      <% if (project.rewardTiers.length > 0) { %>
+        <h3>Rewards</h3>
+        <% project.rewardTiers.forEach(tier => { %>
+          <div class="reward-tier">
+            <h4>Pledge $<%= tier.minimumPledge %>+</h4>
+            <strong><%= tier.title %></strong>
+            <p><%= tier.description %></p>
+            <% if (tier.estimatedDelivery) { %>
+              <p class="small">Est. delivery: <%= tier.estimatedDelivery.toDateString() %></p>
+            <% } %>
+            <% if (tier.limitedQuantity) { %>
+              <p class="small"><%= tier.limitedQuantity - tier.claimedCount %> of <%= tier.limitedQuantity %> remaining</p>
+            <% } %>
+          </div>
+        <% }) %>
+      <% } %>
+
+      <!-- Pledge Form -->
+      <% if (!isOwner && !hasBacked && project.status === 'active' && !project.isExpired) { %>
+        <div id="pledge-section" class="pledge-form">
+          <h3>Make a Pledge</h3>
+          <form action="/pledges" method="POST">
+            <input type="hidden" name="projectId" value="<%= project._id %>" />
+            <label>Pledge Amount ($)</label>
+            <input type="number" name="amount" min="1" placeholder="Enter amount" required class="form-control" />
+            <% if (project.rewardTiers.length > 0) { %>
+              <label>Select Reward (optional)</label>
+              <select name="rewardTierId" class="form-control">
+                <option value="">No reward</option>
+                <% project.rewardTiers.forEach(tier => { %>
+                  <option value="<%= tier._id %>">$<%= tier.minimumPledge %>+ — <%= tier.title %></option>
+                <% }) %>
+              </select>
+            <% } %>
+            <label>Message (optional)</label>
+            <textarea name="message" rows="2" maxlength="300" class="form-control"></textarea>
+            <label class="checkbox-label">
+              <input type="checkbox" name="anonymous" value="true" /> Back anonymously
+            </label>
+            <button type="submit" class="btn btn-primary btn-full">Back This Project</button>
+          </form>
+        </div>
+      <% } %>
+
+      <!-- Recent Backers -->
+      <% if (recentBackers.length > 0) { %>
+        <div class="recent-backers">
+          <h4>Recent Backers</h4>
+          <% recentBackers.forEach(pledge => { %>
+            <div class="backer-row">
+              <img src="<%= pledge.backer.avatar %>" alt="" class="avatar-sm" />
+              <span><%= pledge.backer.name %></span>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </aside>
+  </div>
+</div>

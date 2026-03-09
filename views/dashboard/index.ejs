@@ -1,0 +1,77 @@
+<div class="dashboard">
+  <h1>Welcome back, <%= user.name %> 👋</h1>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <strong>$<%= stats.totalRaised.toLocaleString() %></strong>
+      <span>Total Raised</span>
+    </div>
+    <div class="stat-card">
+      <strong><%= stats.projectsCreated %></strong>
+      <span>Projects Created</span>
+    </div>
+    <div class="stat-card">
+      <strong>$<%= stats.totalPledged.toLocaleString() %></strong>
+      <span>Total Pledged</span>
+    </div>
+    <div class="stat-card">
+      <strong><%= stats.projectsBacked %></strong>
+      <span>Projects Backed</span>
+    </div>
+  </div>
+
+  <!-- Your Projects -->
+  <section class="dashboard-section">
+    <div class="section-header">
+      <h2>Your Projects</h2>
+      <a href="/projects/new" class="btn btn-primary">+ New Project</a>
+    </div>
+    <% if (createdProjects.length === 0) { %>
+      <p class="empty-state">No projects yet. <a href="/projects/new">Start your first project →</a></p>
+    <% } else { %>
+      <table class="data-table">
+        <thead>
+          <tr><th>Title</th><th>Status</th><th>Raised</th><th>Backers</th><th>Deadline</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+          <% createdProjects.forEach(p => { %>
+          <tr>
+            <td><a href="/projects/<%= p.slug %>"><%= p.title %></a></td>
+            <td><span class="badge badge-<%= p.status %>"><%= p.status %></span></td>
+            <td>$<%= p.amountRaised.toLocaleString() %> / $<%= p.fundingGoal.toLocaleString() %></td>
+            <td><%= p.backerCount %></td>
+            <td><%= p.deadline.toDateString() %></td>
+            <td>
+              <a href="/projects/<%= p.slug %>/edit" class="btn btn-sm">Edit</a>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </section>
+
+  <!-- Backed Projects -->
+  <section class="dashboard-section">
+    <h2>Projects You've Backed</h2>
+    <% if (pledges.length === 0) { %>
+      <p class="empty-state">No pledges yet. <a href="/projects">Discover projects →</a></p>
+    <% } else { %>
+      <% pledges.forEach(pledge => { %>
+        <div class="pledge-row">
+          <img src="<%= pledge.project.image %>" alt="" class="pledge-img" />
+          <div>
+            <a href="/projects/<%= pledge.project.slug %>"><strong><%= pledge.project.title %></strong></a>
+            <p>You pledged <strong>$<%= pledge.amount %></strong> · Status: <span class="badge"><%= pledge.status %></span></p>
+          </div>
+          <% if (pledge.status === 'confirmed') { %>
+            <form action="/pledges/<%= pledge._id %>/cancel" method="POST">
+              <button onclick="return confirm('Cancel pledge?')" class="btn btn-sm btn-danger">Cancel</button>
+            </form>
+          <% } %>
+        </div>
+      <% }) %>
+    <% } %>
+  </section>
+</div>
